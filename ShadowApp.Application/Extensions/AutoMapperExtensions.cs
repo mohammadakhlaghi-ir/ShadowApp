@@ -1,5 +1,5 @@
-﻿using ShadowApp.Application.Mapping;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace ShadowApp.Application.Extensions
 {
@@ -9,7 +9,7 @@ namespace ShadowApp.Application.Extensions
         {
             services.AddAutoMapper(cfg =>
             {
-                cfg.AddProfile<LogProfile>();
+                cfg.AddMaps(Assembly.GetExecutingAssembly());
             });
 
             return services;

@@ -6,7 +6,7 @@ namespace ShadowApp.Domain.Entities
     {
         [Key]
         public byte ID { get; set; }
-        public int LanguageID { get; set; }
+        public uint LanguageID { get; set; }
         public string Crc { get; set; } = "";
         public DateTime ModifyDate { get; set; } = DateTime.Now;
 

@@ -59,7 +59,7 @@ namespace ShadowApp.Infrastructure.Persistence.Seed
 
             if (!context.Settings.Any())
             {
-                int defaultLanguageID = 0;
+                uint defaultLanguageID = 0;
 
                 var existFarsiLanguage = context.Languages.FirstOrDefault(l => l.Name == "fa");
 

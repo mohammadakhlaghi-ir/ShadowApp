@@ -12,6 +12,7 @@ namespace ShadowApp.Infrastructure.Extensions
         {
             services.AddDatabase(configuration);
             services.AddScoped<ILogService, LogService>();
+            services.AddSingleton<ITranslationService, TranslationService>();
             return services;
         }
     }

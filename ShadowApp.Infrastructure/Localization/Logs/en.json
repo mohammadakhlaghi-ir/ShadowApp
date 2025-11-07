@@ -1,0 +1,6 @@
+{
+  "ApplicationStartedTitle": "Application Started",
+  "ApplicationStartedDescription": "App started successfully at {time}",
+  "StartupErrorTitle": "Startup Error",
+  "StartupErrorDescription": "An error occurred: {error}"
+}

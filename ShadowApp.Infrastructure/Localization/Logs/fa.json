@@ -1,0 +1,6 @@
+{
+  "ApplicationStartedTitle": "برنامه شروع شد",
+  "ApplicationStartedDescription": "برنامه با موفقیت در {time} شروع شد.",
+  "StartupErrorTitle": "خطای شروع برنامه",
+  "StartupErrorDescription": "خطایی رخ داد: {error}"
+}

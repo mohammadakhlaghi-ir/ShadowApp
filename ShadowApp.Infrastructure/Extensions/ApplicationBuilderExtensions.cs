@@ -1,9 +1,10 @@
-﻿using ShadowApp.Application.DTOs;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using ShadowApp.Application.DTOs;
 using ShadowApp.Application.Interfaces;
 using ShadowApp.Infrastructure.Persistence;
 using ShadowApp.Infrastructure.Persistence.Seed;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ShadowApp.Infrastructure.Extensions
 {
@@ -16,22 +17,31 @@ namespace ShadowApp.Infrastructure.Extensions
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var logService = scope.ServiceProvider.GetRequiredService<ILogService>();
 
+            var setting = await dbContext.Settings.Include(s => s.Language).FirstOrDefaultAsync();
+            var langName = setting?.Language?.Name ?? "fa";
+
             try
             {
                 dbContext.SeedAdminUser();
 
                 await logService.AddLog(new AddLogDto
                 {
-                    Title = "Application Started",
-                    Description = $"App started successfully at {DateTime.Now}"
+                    Title = "ApplicationStartedTitle",
+                    Description = "ApplicationStartedDescription"
+                }, langName, new Dictionary<string, string>
+                {
+                    ["time"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 });
             }
             catch (Exception ex)
             {
                 await logService.AddLog(new AddLogDto
                 {
-                    Title = "Startup Error",
-                    Description = ex.ToString()
+                    Title = "StartupErrorTitle",
+                    Description = "StartupErrorDescription"
+                }, langName, new Dictionary<string, string>
+                {
+                    ["error"] = ex.Message
                 });
                 throw;
             }

@@ -26,10 +26,8 @@ namespace ShadowApp.Infrastructure.Services
                 return key;
 
             if (parameters != null)
-            {
                 foreach (var param in parameters)
                     value = value.Replace($"{{{param.Key}}}", param.Value);
-            }
 
             return value;
         }

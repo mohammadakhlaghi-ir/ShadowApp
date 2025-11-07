@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using ShadowApp.Application.DTOs;
 using ShadowApp.Application.Interfaces;
 using ShadowApp.Infrastructure.Persistence;
-using ShadowApp.Infrastructure.Persistence.Seed;
 
 namespace ShadowApp.Infrastructure.Extensions
 {
@@ -22,7 +21,7 @@ namespace ShadowApp.Infrastructure.Extensions
 
             try
             {
-                dbContext.SeedAdminUser();
+                dbContext.InitializeDatabase();
 
                 await logService.AddLog(new AddLogDto
                 {

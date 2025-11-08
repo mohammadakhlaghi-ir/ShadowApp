@@ -12,6 +12,7 @@ namespace ShadowApp.Infrastructure.Persistence
             context.SeedLanguages();
             context.SeedSetting();
             context.SeedAdminUser();
+            context.CreateLanguageProtectionTrigger();
         }
 
         public static void SeedLanguages(this AppDbContext context)

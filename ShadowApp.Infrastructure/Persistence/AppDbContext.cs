@@ -35,7 +35,12 @@ namespace ShadowApp.Infrastructure.Persistence
                 .HasOne(t => t.Language)
                 .WithMany()
                 .HasForeignKey(t => t.LanguageID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Language>()
+                .Property(l => l.Name)
+                .ValueGeneratedNever()
+                .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
         }
     }
 }

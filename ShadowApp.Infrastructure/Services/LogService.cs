@@ -13,7 +13,8 @@ namespace ShadowApp.Infrastructure.Services
         private readonly IMapper _mapper = mapper;
         private readonly ITranslationService _translationService = translationService;
 
-        public async Task AddLog(AddLogDto logDto, string languageName = "fa", Dictionary<string, string>? parameters = null)
+        public async Task AddLog(AddLogDto logDto, string languageName = "fa", 
+            Dictionary<string, string>? parameters = null)
         {
             logDto.Title = _translationService.Translate(logDto.Title, languageName, parameters);
             logDto.Description = _translationService.Translate(logDto.Description, languageName, parameters);

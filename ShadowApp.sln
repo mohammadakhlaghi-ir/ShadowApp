@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadowApp.Api", "ShadowApp.Api\ShadowApp.Api.csproj", "{1EC7FA87-A879-76A1-8318-272E9AF237AC}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadowApp.Infrastructure", "ShadowApp.Infrastructure\ShadowApp.Infrastructure.csproj", "{E55B91BB-2467-54C2-2C00-6B0E1A8ACEA9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadowApp.Test", "ShadowApp.Test\ShadowApp.Test.csproj", "{D4FADFE8-A1A5-4789-80BE-539EE57C34F1}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "shadowapp.ui", "ShadowApp.UI\shadowapp.ui.esproj", "{F154F273-22EC-8607-31BD-2B7A6055086D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,12 @@ Global
 		{D4FADFE8-A1A5-4789-80BE-539EE57C34F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4FADFE8-A1A5-4789-80BE-539EE57C34F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4FADFE8-A1A5-4789-80BE-539EE57C34F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F154F273-22EC-8607-31BD-2B7A6055086D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F154F273-22EC-8607-31BD-2B7A6055086D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F154F273-22EC-8607-31BD-2B7A6055086D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F154F273-22EC-8607-31BD-2B7A6055086D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F154F273-22EC-8607-31BD-2B7A6055086D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F154F273-22EC-8607-31BD-2B7A6055086D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,14 +11,14 @@ namespace ShadowApp.Domain.Entities
     {
         [Key]
         public ulong ID { get; set; }
-        public uint UserID { get; set; }
+        public ulong UserID { get; set; }
         public uint LanguageID { get; set; }
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
         public DateTime CreateDate { get; set; } = DateTime.Now;
-        public uint Creator { get; set; } = 0;
+        public ulong Creator { get; set; } = 0;
         public DateTime ModifyDate { get; set; } = DateTime.Now;
-        public uint Modifier { get; set; } = 0;
+        public ulong Modifier { get; set; } = 0;
         public string Crc { get; set; } = "";
 
         #region navigation

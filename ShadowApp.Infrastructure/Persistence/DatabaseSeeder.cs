@@ -74,12 +74,23 @@ namespace ShadowApp.Infrastructure.Persistence
                 else
                     defaultLanguageID = existFarsiLanguage.ID;
 
+                var existFavicon = context.Favicons.FirstOrDefault(f => f.Main);
+
+                if (existFavicon == null)
+                {
+                    context.SeedFavicon();
+                    existFavicon = context.Favicons.First(f => f.Main);
+                }
+
                 var setting = new Setting
                 {
                     LanguageID = defaultLanguageID,
+                    AppName = "Shadow App",
+                    FaviconID = existFavicon.ID
                 };
 
-                setting.Crc = CrcHelper.ComputeCrc($"{setting.LanguageID}|{setting.ModifyDate:O}");
+                setting.Crc = CrcHelper.ComputeCrc($"{setting.ID}|{setting.LanguageID}|{setting.AppName}|" +
+                    $"{setting.AppDescription}|{setting.FaviconID}|{setting.Modifier}|{setting.ModifyDate:O}");
 
                 context.Settings.Add(setting);
                 context.SaveChanges();
@@ -143,6 +154,31 @@ namespace ShadowApp.Infrastructure.Persistence
 
                 context.SaveChanges();
             }
-        }     
+        }
+
+        public static void SeedFavicon(this AppDbContext context)
+        {
+            if (!context.Favicons.Any())
+            {
+                var favicon = new Favicon
+                {
+                    Name = "MainFavicon",
+                    Main = true,
+                };
+
+                context.Favicons.Add(favicon);
+                context.SaveChanges();
+
+                favicon.Crc = CrcHelper.ComputeCrc(
+                    $"{favicon.ID}|{favicon.Name}|" +
+                    $"{favicon.Description}|{favicon.Main}|" +
+                    $"|{favicon.Creator}|{favicon.CreateDate:O}" +
+                    $"{favicon.ModifyDate:O}|{favicon.Modifier}"
+                );
+
+                context.Favicons.Update(favicon);
+                context.SaveChanges();
+            }
+        }
     }
 }

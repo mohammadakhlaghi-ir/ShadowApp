@@ -10,6 +10,8 @@ namespace ShadowApp.Infrastructure.Persistence
         public DbSet<Setting> Settings => Set<Setting>();
         public DbSet<Language> Languages => Set<Language>();
         public DbSet<UserTranslation> UserTranslations => Set<UserTranslation>();
+        public DbSet<Favicon> Favicons => Set<Favicon>();
+        public DbSet<Logo> Logos => Set<Logo>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,6 +21,12 @@ namespace ShadowApp.Infrastructure.Persistence
                 .HasOne(s => s.Language)
                 .WithOne(l => l.Setting)
                 .HasForeignKey<Setting>(s => s.LanguageID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Setting>()
+                .HasOne(s => s.Favicon)
+                .WithOne(l => l.Setting)
+                .HasForeignKey<Setting>(s => s.FaviconID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserTranslation>()

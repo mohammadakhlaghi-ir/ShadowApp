@@ -46,7 +46,6 @@ namespace ShadowApp.Infrastructure.Persistence
                             RETURN;
                         END
 
-                        -- allow other columns to be updated
                         UPDATE Languages
                         SET Description = i.Description,
                             CreateDate = i.CreateDate,

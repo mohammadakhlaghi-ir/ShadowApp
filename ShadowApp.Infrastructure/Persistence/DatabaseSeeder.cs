@@ -6,14 +6,14 @@ namespace ShadowApp.Infrastructure.Persistence
 {
     public static class DatabaseSeeder
     {
+        public static readonly string[] initializePages = { "Home", "Dashboard" };
         public static void InitializeDatabase(this AppDbContext context)
         {
             context.Database.Migrate();
             context.SeedLanguages();
             context.SeedSetting();
             context.SeedAdminUser();
-            context.CreateLanguageProtectionTrigger();
-            context.CreateFaviconConstraints();
+            foreach (var pageName in initializePages) context.SeedPages(pageName);
         }
 
         public static void SeedLanguages(this AppDbContext context)
@@ -178,6 +178,70 @@ namespace ShadowApp.Infrastructure.Persistence
                 );
 
                 context.Favicons.Update(favicon);
+                context.SaveChanges();
+            }
+        }
+
+        public static void SeedSpecialPage(this AppDbContext context, string pageName)
+        {
+            if (!context.SpecialPages.Any(s => s.Name == pageName))
+            {
+                var specialPage = new SpecialPage
+                {
+                    Name = pageName,
+                };
+
+                context.SpecialPages.Add(specialPage);
+                context.SaveChanges();
+
+                specialPage.Crc = CrcHelper.ComputeCrc(
+                    $"{specialPage.ID}|{specialPage.Name}|" +
+                    $"{specialPage.Description}" +
+                    $"|{specialPage.Creator}|{specialPage.CreateDate:O}" +
+                    $"{specialPage.ModifyDate:O}|{specialPage.Modifier}"
+                );
+
+                context.SpecialPages.Update(specialPage);
+                context.SaveChanges();
+            }
+        }
+
+        public static void SeedPages(this AppDbContext context, string pageName)
+        {
+            if (!context.Pages.Any(p => p.Name == pageName))
+            {
+                var existingSpecialPage = context.SpecialPages.FirstOrDefault(s => s.Name == pageName);
+                if (existingSpecialPage == null)
+                {
+                    context.SeedSpecialPage(pageName);
+                    existingSpecialPage = context.SpecialPages.First(s => s.Name == pageName);
+                }
+
+                var existingFavicon = context.Favicons.FirstOrDefault(f => f.Main);
+                if (existingFavicon == null)
+                {
+                    context.SeedFavicon();
+                    existingFavicon = context.Favicons.First(f => f.Main);
+                }
+
+                var page = new Page
+                {
+                    Name = pageName,
+                    SpecialPageID = existingSpecialPage.ID,
+                    FaviconID = existingFavicon.ID
+                };
+
+                context.Pages.Add(page);
+                context.SaveChanges();
+
+                page.Crc = CrcHelper.ComputeCrc(
+                    $"{page.ID}|{page.Name}|" +
+                    $"{page.Description}|{page.SpecialPageID}|{page.FaviconID}" +
+                    $"|{page.Creator}|{page.CreateDate:O}" +
+                    $"{page.ModifyDate:O}|{page.Modifier}"
+                );
+
+                context.Pages.Update(page);
                 context.SaveChanges();
             }
         }

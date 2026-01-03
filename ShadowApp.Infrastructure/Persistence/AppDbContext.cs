@@ -12,6 +12,8 @@ namespace ShadowApp.Infrastructure.Persistence
         public DbSet<UserTranslation> UserTranslations => Set<UserTranslation>();
         public DbSet<Favicon> Favicons => Set<Favicon>();
         public DbSet<Logo> Logos => Set<Logo>();
+        public DbSet<Page> Pages => Set<Page>();
+        public DbSet<SpecialPage> SpecialPages => Set<SpecialPage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,7 +27,7 @@ namespace ShadowApp.Infrastructure.Persistence
 
             modelBuilder.Entity<Setting>()
                 .HasOne(s => s.Favicon)
-                .WithOne(l => l.Setting)
+                .WithOne(f => f.Setting)
                 .HasForeignKey<Setting>(s => s.FaviconID)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -49,6 +51,18 @@ namespace ShadowApp.Infrastructure.Persistence
                 .Property(l => l.Name)
                 .ValueGeneratedNever()
                 .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
+
+            modelBuilder.Entity<Page>()
+              .HasOne(p => p.SpecialPage)
+              .WithOne(s => s.Page)
+              .HasForeignKey<Page>(p => p.SpecialPageID)
+              .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Page>()
+              .HasOne(p => p.Favicon)
+              .WithMany(f => f.Pages)
+              .HasForeignKey(p => p.FaviconID)
+              .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

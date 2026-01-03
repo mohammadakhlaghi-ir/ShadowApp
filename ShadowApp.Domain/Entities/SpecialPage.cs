@@ -2,13 +2,12 @@
 
 namespace ShadowApp.Domain.Entities
 {
-    public class Favicon
+    public class SpecialPage
     {
         [Key]
         public uint ID { get; set; }
         public string Name { get; set; } = "";
         public string? Description { get; set; }
-        public bool Main { get; set; }
         public ulong Creator { get; set; } = 0;
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public ulong Modifier { get; set; } = 0;
@@ -16,8 +15,7 @@ namespace ShadowApp.Domain.Entities
         public string Crc { get; set; } = "";
 
         #region navigations
-        public Setting Setting { get; set; } = null!;
-        public ICollection<Page> Pages { get; set; } = [];
+        public Page Page { get; set; } = null!;
         #endregion
     }
 }

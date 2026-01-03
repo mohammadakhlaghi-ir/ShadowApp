@@ -14,7 +14,7 @@ namespace ShadowApp.Domain.Entities
         public ulong Modifier { get; set; } = 0;
         public string Crc { get; set; } = "";
 
-        #region navigation
+        #region navigations
         public Setting Setting { get; set; } = null!;
         #endregion
     }

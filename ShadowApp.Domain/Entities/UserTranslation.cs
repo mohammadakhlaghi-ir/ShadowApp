@@ -21,7 +21,7 @@ namespace ShadowApp.Domain.Entities
         public ulong Modifier { get; set; } = 0;
         public string Crc { get; set; } = "";
 
-        #region navigation
+        #region navigations
         public User User { get; set; } = null!;
         public Language Language { get; set; } = null!;
         #endregion

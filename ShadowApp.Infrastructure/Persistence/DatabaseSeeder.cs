@@ -13,6 +13,7 @@ namespace ShadowApp.Infrastructure.Persistence
             context.SeedSetting();
             context.SeedAdminUser();
             context.CreateLanguageProtectionTrigger();
+            context.CreateFaviconConstraints();
         }
 
         public static void SeedLanguages(this AppDbContext context)

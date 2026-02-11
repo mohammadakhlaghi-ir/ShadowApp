@@ -6,7 +6,7 @@ namespace ShadowApp.Infrastructure.Persistence
 {
     public static class DatabaseSeeder
     {
-        public static readonly string[] initializePages = { "Home", "Dashboard" };
+        public static readonly string[] initializePages = ["Home", "Dashboard"];
         public static void InitializeDatabase(this AppDbContext context)
         {
             context.Database.Migrate();
@@ -27,8 +27,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 };
 
                 farsiLanguage.Crc = CrcHelper.ComputeCrc(
-                    $"{farsiLanguage.Name}|" +
-                    $"{farsiLanguage.Description}|{farsiLanguage.CreateDate:O}|{farsiLanguage.Creator}|" +
+                    $"{farsiLanguage.Name}|" + $"{farsiLanguage.Description}" +
                     $"{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
 
                 var englishLanguage = new Language
@@ -38,8 +37,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 };
 
                 englishLanguage.Crc = CrcHelper.ComputeCrc(
-                    $"{englishLanguage.Name}|" +
-                    $"{englishLanguage.Description}|{englishLanguage.CreateDate:O}|{englishLanguage.Creator}|" +
+                    $"{englishLanguage.Name}|" + $"{englishLanguage.Description}" +
                     $"{englishLanguage.ModifyDate:O}|{englishLanguage.Modifier}");
 
                 context.Languages.AddRange(farsiLanguage, englishLanguage);
@@ -51,7 +49,7 @@ namespace ShadowApp.Infrastructure.Persistence
         {
             if (!context.Settings.Any())
             {
-                uint defaultLanguageID = 0;
+                Guid defaultLanguageID;
 
                 var existFarsiLanguage = context.Languages.FirstOrDefault(l => l.Name == "fa");
 
@@ -64,8 +62,7 @@ namespace ShadowApp.Infrastructure.Persistence
                     };
 
                     farsiLanguage.Crc = CrcHelper.ComputeCrc($"{farsiLanguage.Name}|" +
-                        $"{farsiLanguage.Description}|{farsiLanguage.CreateDate:O}|{farsiLanguage.Creator}|" +
-                        $"{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
+                        $"{farsiLanguage.Description}" + $"{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
 
                     context.Languages.AddRange(farsiLanguage);
                     context.SaveChanges();
@@ -133,25 +130,19 @@ namespace ShadowApp.Infrastructure.Persistence
                 faTranslation.Crc = CrcHelper.ComputeCrc(
                     $"{faTranslation.UserID}|{faTranslation.LanguageID}|" +
                     $"{faTranslation.FirstName}|{faTranslation.LastName}|" +
-                    $"{faTranslation.CreateDate:O}|{faTranslation.Creator}|" +
-                    $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}"
-                );
+                    $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}");
 
                 enTranslation.Crc = CrcHelper.ComputeCrc(
                     $"{enTranslation.UserID}|{enTranslation.LanguageID}|" +
                     $"{enTranslation.FirstName}|{enTranslation.LastName}|" +
-                    $"{enTranslation.CreateDate:O}|{enTranslation.Creator}|" +
-                    $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}"
-                );
+                    $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}");
 
                 context.UserTranslations.AddRange(faTranslation, enTranslation);
 
                 adminUser.Crc = CrcHelper.ComputeCrc(
                      $"{adminUser.Name}|{adminUser.Email}|" +
                      $"{adminUser.IsDeleted}|{adminUser.Enabled}|" +
-                     $"{adminUser.CreateDate:O}|{adminUser.Creator}|" +
-                     $"{adminUser.ModifyDate:O}|{adminUser.Modifier}"
-                 );
+                     $"{adminUser.ModifyDate:O}|{adminUser.Modifier}");
 
                 context.SaveChanges();
             }
@@ -173,9 +164,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 favicon.Crc = CrcHelper.ComputeCrc(
                     $"{favicon.ID}|{favicon.Name}|" +
                     $"{favicon.Description}|{favicon.Main}|" +
-                    $"|{favicon.Creator}|{favicon.CreateDate:O}" +
-                    $"{favicon.ModifyDate:O}|{favicon.Modifier}"
-                );
+                    $"{favicon.ModifyDate:O}|{favicon.Modifier}");
 
                 context.Favicons.Update(favicon);
                 context.SaveChanges();
@@ -197,9 +186,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 specialPage.Crc = CrcHelper.ComputeCrc(
                     $"{specialPage.ID}|{specialPage.Name}|" +
                     $"{specialPage.Description}" +
-                    $"|{specialPage.Creator}|{specialPage.CreateDate:O}" +
-                    $"{specialPage.ModifyDate:O}|{specialPage.Modifier}"
-                );
+                    $"{specialPage.ModifyDate:O}|{specialPage.Modifier}");
 
                 context.SpecialPages.Update(specialPage);
                 context.SaveChanges();
@@ -237,9 +224,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 page.Crc = CrcHelper.ComputeCrc(
                     $"{page.ID}|{page.Name}|" +
                     $"{page.Description}|{page.SpecialPageID}|{page.FaviconID}" +
-                    $"|{page.Creator}|{page.CreateDate:O}" +
-                    $"{page.ModifyDate:O}|{page.Modifier}"
-                );
+                    $"{page.ModifyDate:O}|{page.Modifier}");
 
                 context.Pages.Update(page);
                 context.SaveChanges();

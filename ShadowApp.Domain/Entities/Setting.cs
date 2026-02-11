@@ -6,11 +6,11 @@ namespace ShadowApp.Domain.Entities
     {
         [Key]
         public byte ID { get; set; }
-        public uint LanguageID { get; set; }
+        public Guid LanguageID { get; set; }
         public string AppName { get; set; } = "";
         public string? AppDescription { get; set; }
-        public uint FaviconID { get; set; }
-        public ulong Modifier { get; set; }
+        public Guid FaviconID { get; set; }
+        public Guid? Modifier { get; set; }
         public DateTime ModifyDate { get; set; } = DateTime.Now;
         public string Crc { get; set; } = "";
 

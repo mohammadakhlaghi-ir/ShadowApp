@@ -10,15 +10,13 @@ namespace ShadowApp.Domain.Entities
     public class UserTranslation
     {
         [Key]
-        public ulong ID { get; set; }
-        public ulong UserID { get; set; }
-        public uint LanguageID { get; set; }
+        public Guid ID { get; set; }
+        public Guid UserID { get; set; }
+        public Guid LanguageID { get; set; }
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public ulong Creator { get; set; } = 0;
+        public Guid? Modifier { get; set; }
         public DateTime ModifyDate { get; set; } = DateTime.Now;
-        public ulong Modifier { get; set; } = 0;
         public string Crc { get; set; } = "";
 
         #region navigations

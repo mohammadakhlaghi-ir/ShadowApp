@@ -6,7 +6,9 @@ namespace ShadowApp.Infrastructure.Persistence
 {
     public static class DatabaseSeeder
     {
+        public static readonly string appName = "Shadow App";
         public static readonly string[] initializePages = ["Home", "Dashboard"];
+
         public static void InitializeDatabase(this AppDbContext context)
         {
             context.Database.Migrate();
@@ -27,7 +29,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 };
 
                 farsiLanguage.Crc = CrcHelper.ComputeCrc(
-                    $"{farsiLanguage.Name}|" + $"{farsiLanguage.Description}" +
+                    $"{farsiLanguage.Name}|{farsiLanguage.Description}|" +
                     $"{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
 
                 var englishLanguage = new Language
@@ -37,7 +39,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 };
 
                 englishLanguage.Crc = CrcHelper.ComputeCrc(
-                    $"{englishLanguage.Name}|" + $"{englishLanguage.Description}" +
+                    $"{englishLanguage.Name}|{englishLanguage.Description}|" +
                     $"{englishLanguage.ModifyDate:O}|{englishLanguage.Modifier}");
 
                 context.Languages.AddRange(farsiLanguage, englishLanguage);
@@ -62,7 +64,7 @@ namespace ShadowApp.Infrastructure.Persistence
                     };
 
                     farsiLanguage.Crc = CrcHelper.ComputeCrc($"{farsiLanguage.Name}|" +
-                        $"{farsiLanguage.Description}" + $"{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
+                        $"{farsiLanguage.Description}|{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
 
                     context.Languages.AddRange(farsiLanguage);
                     context.SaveChanges();
@@ -72,23 +74,39 @@ namespace ShadowApp.Infrastructure.Persistence
                 else
                     defaultLanguageID = existFarsiLanguage.ID;
 
-                var existFavicon = context.Favicons.FirstOrDefault(f => f.Main);
+                var existFavicon = context.Favicons.FirstOrDefault();
 
                 if (existFavicon == null)
                 {
                     context.SeedFavicon();
-                    existFavicon = context.Favicons.First(f => f.Main);
+                    existFavicon = context.Favicons.First();
+                }
+
+                var existLayout = context.Layouts.FirstOrDefault();
+                if (existLayout == null)
+                {
+                    context.SeedLayout();
+                    existLayout = context.Layouts.First();
+                }
+
+                var existLogo = context.Logos.FirstOrDefault();
+                if (existLogo == null)
+                {
+                    context.SeedLogo();
+                    existLogo = context.Logos.First();
                 }
 
                 var setting = new Setting
                 {
                     LanguageID = defaultLanguageID,
-                    AppName = "Shadow App",
-                    FaviconID = existFavicon.ID
+                    AppName = appName,
+                    FaviconID = existFavicon.ID,
+                    LayoutID = existLayout.ID,
+                    LogoID = existLogo.ID
                 };
 
-                setting.Crc = CrcHelper.ComputeCrc($"{setting.ID}|{setting.LanguageID}|{setting.AppName}|" +
-                    $"{setting.AppDescription}|{setting.FaviconID}|{setting.Modifier}|{setting.ModifyDate:O}");
+                setting.Crc = CrcHelper.ComputeCrc($"{setting.LanguageID}|{setting.AppName}|" +
+                    $"{setting.FaviconID}|{setting.LayoutID}|{setting.Modifier}|{setting.ModifyDate:O}");
 
                 context.Settings.Add(setting);
                 context.SaveChanges();
@@ -105,44 +123,45 @@ namespace ShadowApp.Infrastructure.Persistence
                     Password = "Admin@123",
                     Email = "admin@example.com",
                 };
-                context.Users.Add(adminUser);
-                context.SaveChanges();
 
                 var fa = context.Languages.First(l => l.Name == "fa");
                 var en = context.Languages.First(l => l.Name == "en");
 
                 var faTranslation = new UserTranslation
                 {
-                    UserID = adminUser.ID,
+                    User = adminUser,
                     LanguageID = fa.ID,
                     FirstName = "سیستم",
-                    LastName = "مدیر"
+                    LastName = "مدیر",
+                    Description = "مدیر سیستم"
                 };
 
                 var enTranslation = new UserTranslation
                 {
-                    UserID = adminUser.ID,
+                    User = adminUser,
                     LanguageID = en.ID,
                     FirstName = "System",
-                    LastName = "Admin"
+                    LastName = "Admin",
+                    Description = "Administrator"
                 };
+
+                context.Users.Add(adminUser);
+                context.UserTranslations.AddRange(faTranslation, enTranslation);
+
+                adminUser.Crc = CrcHelper.ComputeCrc(
+                    $"{adminUser.Name}|{adminUser.Email}|" +
+                    $"{adminUser.IsDeleted}|{adminUser.Enabled}|" +
+                    $"{adminUser.ModifyDate:O}|{adminUser.Modifier}");
 
                 faTranslation.Crc = CrcHelper.ComputeCrc(
                     $"{faTranslation.UserID}|{faTranslation.LanguageID}|" +
-                    $"{faTranslation.FirstName}|{faTranslation.LastName}|" +
+                    $"{faTranslation.FirstName}|{faTranslation.LastName}|{faTranslation.Description}|" +
                     $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}");
 
                 enTranslation.Crc = CrcHelper.ComputeCrc(
                     $"{enTranslation.UserID}|{enTranslation.LanguageID}|" +
-                    $"{enTranslation.FirstName}|{enTranslation.LastName}|" +
+                    $"{enTranslation.FirstName}|{enTranslation.LastName}|{enTranslation.Description}|" +
                     $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}");
-
-                context.UserTranslations.AddRange(faTranslation, enTranslation);
-
-                adminUser.Crc = CrcHelper.ComputeCrc(
-                     $"{adminUser.Name}|{adminUser.Email}|" +
-                     $"{adminUser.IsDeleted}|{adminUser.Enabled}|" +
-                     $"{adminUser.ModifyDate:O}|{adminUser.Modifier}");
 
                 context.SaveChanges();
             }
@@ -155,80 +174,190 @@ namespace ShadowApp.Infrastructure.Persistence
                 var favicon = new Favicon
                 {
                     Name = "MainFavicon",
-                    Main = true,
+                    Description = "MainFavicon"
                 };
+
+                favicon.Crc = CrcHelper.ComputeCrc(
+                    $"{favicon.Name}|{favicon.Description}|{favicon.ModifyDate:O}|{favicon.Modifier}");
 
                 context.Favicons.Add(favicon);
                 context.SaveChanges();
+            }
+        }
 
-                favicon.Crc = CrcHelper.ComputeCrc(
-                    $"{favicon.ID}|{favicon.Name}|" +
-                    $"{favicon.Description}|{favicon.Main}|" +
-                    $"{favicon.ModifyDate:O}|{favicon.Modifier}");
+        public static void SeedLogo(this AppDbContext context)
+        {
+            if (!context.Logos.Any())
+            {
+                var logo = new Logo
+                {
+                    Name = "MainLogo",
+                    Description = "MainLogo"
+                };
 
-                context.Favicons.Update(favicon);
+                logo.Crc = CrcHelper.ComputeCrc(
+                    $"{logo.Name}|{logo.Description}|{logo.ModifyDate:O}|{logo.Modifier}");
+
+                context.Logos.Add(logo);
                 context.SaveChanges();
             }
+        }
+
+        public static void SeedLayout(this AppDbContext context)
+        {
+            if (!context.Layouts.Any())
+            {
+                var layout = new Layout
+                {
+                    Name = "Main Layout",
+                    Description = "Main Layout"
+                };
+
+                layout.Crc = CrcHelper.ComputeCrc(
+                    $"{layout.Name}|{layout.Description}|{layout.ModifyDate:O}|{layout.Modifier}");
+
+                context.Layouts.Add(layout);
+                context.SaveChanges();
+            }
+        }
+
+        private static (string faName, string faDesc, string enName, string enDesc) GetPageTranslations(string pageName)
+        {
+            return pageName switch
+            {
+                "Home" => (
+                    "خانه",
+                    "صفحه اصلی سایت",
+                    "Home",
+                    "Main Page Of Site"
+                ),
+                "Dashboard" => (
+                    "داشبورد",
+                    "صفحه داشبورد کاربران",
+                    "Dashboard",
+                    "Dashboard Page Of Users"
+                ),
+                _ => (
+                    pageName,
+                    pageName,
+                    pageName,
+                    pageName
+                )
+            };
         }
 
         public static void SeedSpecialPage(this AppDbContext context, string pageName)
         {
-            if (!context.SpecialPages.Any(s => s.Name == pageName))
+            if (context.SpecialPages.Any(s => s.Name == pageName))
+                return;
+
+            var (faName, faDesc, enName, enDesc) = GetPageTranslations(pageName);
+
+            var fa = context.Languages.First(l => l.Name == "fa");
+            var en = context.Languages.First(l => l.Name == "en");
+
+            var specialPage = new SpecialPage
             {
-                var specialPage = new SpecialPage
-                {
-                    Name = pageName,
-                };
+                Name = pageName
+            };
 
-                context.SpecialPages.Add(specialPage);
-                context.SaveChanges();
+            var faTranslation = new SpecialPageTranslation
+            {
+                SpecialPage = specialPage,
+                LanguageID = fa.ID,
+                Name = faName,
+                Description = faDesc
+            };
 
-                specialPage.Crc = CrcHelper.ComputeCrc(
-                    $"{specialPage.ID}|{specialPage.Name}|" +
-                    $"{specialPage.Description}" +
-                    $"{specialPage.ModifyDate:O}|{specialPage.Modifier}");
+            var enTranslation = new SpecialPageTranslation
+            {
+                SpecialPage = specialPage,
+                LanguageID = en.ID,
+                Name = enName,
+                Description = enDesc
+            };
 
-                context.SpecialPages.Update(specialPage);
-                context.SaveChanges();
-            }
+            context.SpecialPages.Add(specialPage);
+            context.SpecialPageTranslations.AddRange(faTranslation, enTranslation);
+
+            specialPage.Crc = CrcHelper.ComputeCrc(
+                $"{specialPage.Name}|{specialPage.ModifyDate:O}|{specialPage.Modifier}");
+
+            faTranslation.Crc = CrcHelper.ComputeCrc(
+                $"{faTranslation.Name}|{faTranslation.Description}|{faTranslation.LanguageID}|" +
+                $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}");
+
+            enTranslation.Crc = CrcHelper.ComputeCrc(
+                $"{enTranslation.Name}|{enTranslation.Description}|{enTranslation.LanguageID}|" +
+                $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}");
+
+            context.SaveChanges();
         }
 
         public static void SeedPages(this AppDbContext context, string pageName)
         {
-            if (!context.Pages.Any(p => p.Name == pageName))
+            var specialPage = context.SpecialPages.FirstOrDefault(s => s.Name == pageName);
+
+            if (specialPage == null)
             {
-                var existingSpecialPage = context.SpecialPages.FirstOrDefault(s => s.Name == pageName);
-                if (existingSpecialPage == null)
-                {
-                    context.SeedSpecialPage(pageName);
-                    existingSpecialPage = context.SpecialPages.First(s => s.Name == pageName);
-                }
-
-                var existingFavicon = context.Favicons.FirstOrDefault(f => f.Main);
-                if (existingFavicon == null)
-                {
-                    context.SeedFavicon();
-                    existingFavicon = context.Favicons.First(f => f.Main);
-                }
-
-                var page = new Page
-                {
-                    Name = pageName,
-                    SpecialPageID = existingSpecialPage.ID,
-                    FaviconID = existingFavicon.ID
-                };
-
-                context.Pages.Add(page);
-                context.SaveChanges();
-
-                page.Crc = CrcHelper.ComputeCrc(
-                    $"{page.ID}|{page.Name}|" +
-                    $"{page.Description}|{page.SpecialPageID}|{page.FaviconID}" +
-                    $"{page.ModifyDate:O}|{page.Modifier}");
-
-                context.Pages.Update(page);
-                context.SaveChanges();
+                context.SeedSpecialPage(pageName);
+                specialPage = context.SpecialPages.First(s => s.Name == pageName);
             }
+
+            if (context.Pages.Any(p => p.SpecialPageID == specialPage.ID))
+                return;
+
+            var setting = context.Settings.FirstOrDefault();
+
+            if (setting == null)
+            {
+                context.SeedSetting();
+                setting = context.Settings.First();
+            }
+
+            var (faName, faDesc, enName, enDesc) = GetPageTranslations(pageName);
+
+            var fa = context.Languages.First(l => l.Name == "fa");
+            var en = context.Languages.First(l => l.Name == "en");
+
+            var page = new Page
+            {
+                SpecialPageID = specialPage.ID,
+                FaviconID = setting.FaviconID,
+                LayoutID = setting.LayoutID
+            };
+
+            var faTranslation = new PageTranslation
+            {
+                Page = page,
+                LanguageID = fa.ID,
+                Name = faName,
+                Description = faDesc
+            };
+
+            var enTranslation = new PageTranslation
+            {
+                Page = page,
+                LanguageID = en.ID,
+                Name = enName,
+                Description = enDesc
+            };
+
+            context.Pages.Add(page);
+            context.PageTranslations.AddRange(faTranslation, enTranslation);
+
+            page.Crc = CrcHelper.ComputeCrc(
+                $"{page.SpecialPageID}|{page.FaviconID}|{page.ModifyDate:O}|{page.Modifier}");
+
+            faTranslation.Crc = CrcHelper.ComputeCrc(
+                $"{faTranslation.Name}|{faTranslation.Description}|{faTranslation.LanguageID}|" +
+                $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}");
+
+            enTranslation.Crc = CrcHelper.ComputeCrc(
+                $"{enTranslation.Name}|{enTranslation.Description}|{enTranslation.LanguageID}|" +
+                $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}");
+
+            context.SaveChanges();
         }
     }
 }

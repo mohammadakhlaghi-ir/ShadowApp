@@ -13,12 +13,16 @@ namespace ShadowApp.Infrastructure.Persistence
         public DbSet<Favicon> Favicons => Set<Favicon>();
         public DbSet<Logo> Logos => Set<Logo>();
         public DbSet<Page> Pages => Set<Page>();
+        public DbSet<PageTranslation> PageTranslations => Set<PageTranslation>();
         public DbSet<SpecialPage> SpecialPages => Set<SpecialPage>();
+        public DbSet<SpecialPageTranslation> SpecialPageTranslations => Set<SpecialPageTranslation>();
+        public DbSet<Layout> Layouts => Set<Layout>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            #region Setting
             modelBuilder.Entity<Setting>()
                 .HasOne(s => s.Language)
                 .WithOne(l => l.Setting)
@@ -31,6 +35,20 @@ namespace ShadowApp.Infrastructure.Persistence
                 .HasForeignKey<Setting>(s => s.FaviconID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Setting>()
+                .HasOne(s => s.Logo)
+                .WithOne(l => l.Setting)
+                .HasForeignKey<Setting>(s => s.LogoID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Setting>()
+                .HasOne(s => s.Layout)
+                .WithOne(l => l.Setting)
+                .HasForeignKey<Setting>(s => s.LayoutID)
+                .OnDelete(DeleteBehavior.Restrict);
+            #endregion
+
+            #region UserTranslation
             modelBuilder.Entity<UserTranslation>()
                 .HasIndex(t => new { t.UserID, t.LanguageID })
                 .IsUnique();
@@ -46,12 +64,16 @@ namespace ShadowApp.Infrastructure.Persistence
                 .WithMany()
                 .HasForeignKey(t => t.LanguageID)
                 .OnDelete(DeleteBehavior.Cascade);
+            #endregion
 
+            #region Language
             modelBuilder.Entity<Language>()
                 .Property(l => l.Name)
                 .ValueGeneratedNever()
                 .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
+            #endregion
 
+            #region Page
             modelBuilder.Entity<Page>()
               .HasOne(p => p.SpecialPage)
               .WithOne(s => s.Page)
@@ -63,6 +85,49 @@ namespace ShadowApp.Infrastructure.Persistence
               .WithMany(f => f.Pages)
               .HasForeignKey(p => p.FaviconID)
               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Page>()
+              .HasOne(p => p.Layout)
+              .WithMany(l => l.Pages)
+              .HasForeignKey(p => p.LayoutID)
+              .OnDelete(DeleteBehavior.Restrict);
+            #endregion
+
+            #region PageTranslation
+            modelBuilder.Entity<PageTranslation>()
+                .HasIndex(t => new { t.PageID, t.LanguageID })
+                .IsUnique();
+
+            modelBuilder.Entity<PageTranslation>()
+                .HasOne(t => t.Page)
+                .WithMany(p => p.Translations)
+                .HasForeignKey(t => t.PageID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PageTranslation>()
+                .HasOne(t => t.Language)
+                .WithMany()
+                .HasForeignKey(t => t.LanguageID)
+                .OnDelete(DeleteBehavior.Cascade);
+            #endregion
+
+            #region SpecialPageTranslation
+            modelBuilder.Entity<SpecialPageTranslation>()
+                .HasIndex(t => new { t.SpecialPageID, t.LanguageID })
+                .IsUnique();
+
+            modelBuilder.Entity<SpecialPageTranslation>()
+                .HasOne(t => t.SpecialPage)
+                .WithMany(p => p.Translations)
+                .HasForeignKey(t => t.SpecialPageID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SpecialPageTranslation>()
+                .HasOne(t => t.Language)
+                .WithMany()
+                .HasForeignKey(t => t.LanguageID)
+                .OnDelete(DeleteBehavior.Cascade);
+            #endregion
         }
     }
 }

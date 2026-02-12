@@ -11,5 +11,9 @@ namespace ShadowApp.Domain.Entities
         public Guid? Modifier { get; set; }
         public DateTime ModifyDate { get; set; } = DateTime.Now;
         public string Crc { get; set; } = "";
+
+        #region navigations
+        public Setting Setting { get; set; } = null!;
+        #endregion
     }
 }

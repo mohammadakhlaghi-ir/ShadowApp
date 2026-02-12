@@ -6,10 +6,9 @@ namespace ShadowApp.Domain.Entities
     {
         [Key]
         public Guid ID { get; set; }
-        public string Name { get; set; } = "";
-        public string? Description { get; set; }
         public Guid SpecialPageID { get; set; }
         public Guid FaviconID { get; set; }
+        public Guid LayoutID { get; set; }
         public Guid? Modifier { get; set; }
         public DateTime ModifyDate { get; set; } = DateTime.Now;
         public string Crc { get; set; } = "";
@@ -17,6 +16,8 @@ namespace ShadowApp.Domain.Entities
         #region navigations
         public SpecialPage SpecialPage { get; set; } = null!;
         public Favicon Favicon { get; set; } = null!;
+        public Layout Layout { get; set; } = null!;
+        public ICollection<PageTranslation> Translations { get; set; } = [];
         #endregion
     }
 }

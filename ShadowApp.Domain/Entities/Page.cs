@@ -9,6 +9,7 @@ namespace ShadowApp.Domain.Entities
         public Guid SpecialPageID { get; set; }
         public Guid FaviconID { get; set; }
         public Guid LayoutID { get; set; }
+        public bool HeaderVisible { get; set; } = true;
         public Guid? Modifier { get; set; }
         public DateTime ModifyDate { get; set; } = DateTime.Now;
         public string Crc { get; set; } = "";

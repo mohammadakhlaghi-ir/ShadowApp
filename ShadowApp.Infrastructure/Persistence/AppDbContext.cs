@@ -17,6 +17,7 @@ namespace ShadowApp.Infrastructure.Persistence
         public DbSet<SpecialPage> SpecialPages => Set<SpecialPage>();
         public DbSet<SpecialPageTranslation> SpecialPageTranslations => Set<SpecialPageTranslation>();
         public DbSet<Layout> Layouts => Set<Layout>();
+        public DbSet<Header> Headers => Set<Header>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -81,16 +82,16 @@ namespace ShadowApp.Infrastructure.Persistence
               .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Page>()
-              .HasOne(p => p.Favicon)
-              .WithMany(f => f.Pages)
-              .HasForeignKey(p => p.FaviconID)
-              .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(p => p.Favicon)
+                .WithMany(f => f.Pages)
+                .HasForeignKey(p => p.FaviconID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Page>()
-              .HasOne(p => p.Layout)
-              .WithMany(l => l.Pages)
-              .HasForeignKey(p => p.LayoutID)
-              .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(p => p.Layout)
+                .WithMany(l => l.Pages)
+                .HasForeignKey(p => p.LayoutID)
+                .OnDelete(DeleteBehavior.Restrict);
             #endregion
 
             #region PageTranslation
@@ -127,6 +128,14 @@ namespace ShadowApp.Infrastructure.Persistence
                 .WithMany()
                 .HasForeignKey(t => t.LanguageID)
                 .OnDelete(DeleteBehavior.Cascade);
+            #endregion
+
+            #region Layout
+            modelBuilder.Entity<Layout>()
+                .HasOne(p => p.Header)
+                .WithMany(l => l.Layouts)
+                .HasForeignKey(p => p.HeaderID)
+                .OnDelete(DeleteBehavior.Restrict);
             #endregion
         }
     }

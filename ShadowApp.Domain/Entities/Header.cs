@@ -2,21 +2,18 @@
 
 namespace ShadowApp.Domain.Entities
 {
-    public class Layout
+    public class Header
     {
         [Key]
         public Guid ID { get; set; }
         public string Name { get; set; } = "";
         public string? Description { get; set; }
-        public Guid HeaderID { get; set; }
         public Guid? Modifier { get; set; }
         public DateTime ModifyDate { get; set; } = DateTime.Now;
         public string Crc { get; set; } = "";
 
         #region navigations
-        public Setting Setting { get; set; } = null!;
-        public Header Header { get; set; } = null!;
-        public ICollection<Page> Pages { get; set; } = [];
+        public ICollection<Layout> Layouts { get; set; } = [];
         #endregion
     }
 }

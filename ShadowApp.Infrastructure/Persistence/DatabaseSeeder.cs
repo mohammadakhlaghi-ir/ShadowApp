@@ -173,8 +173,8 @@ namespace ShadowApp.Infrastructure.Persistence
             {
                 var favicon = new Favicon
                 {
-                    Name = "MainFavicon",
-                    Description = "MainFavicon"
+                    Name = "Main Favicon",
+                    Description = "Main Favicon"
                 };
 
                 favicon.Crc = CrcHelper.ComputeCrc(
@@ -191,8 +191,8 @@ namespace ShadowApp.Infrastructure.Persistence
             {
                 var logo = new Logo
                 {
-                    Name = "MainLogo",
-                    Description = "MainLogo"
+                    Name = "Main Logo",
+                    Description = "Main Logo"
                 };
 
                 logo.Crc = CrcHelper.ComputeCrc(
@@ -203,18 +203,44 @@ namespace ShadowApp.Infrastructure.Persistence
             }
         }
 
+        public static void SeedHeader(this AppDbContext context)
+        {
+            if (!context.Headers.Any())
+            {
+                var header = new Header
+                {
+                    Name = "Main Header",
+                    Description = "Main Header"
+                };
+
+                header.Crc = CrcHelper.ComputeCrc(
+                    $"{header.Name}|{header.Description}|{header.ModifyDate:O}|{header.Modifier}");
+
+                context.Headers.Add(header);
+                context.SaveChanges();
+            }
+        }
+
         public static void SeedLayout(this AppDbContext context)
         {
             if (!context.Layouts.Any())
             {
+                var existHeader = context.Headers.FirstOrDefault();
+                if (existHeader == null)
+                {
+                    context.SeedHeader();
+                    existHeader = context.Headers.First();
+                }
+
                 var layout = new Layout
                 {
                     Name = "Main Layout",
-                    Description = "Main Layout"
+                    Description = "Main Layout",
+                    HeaderID = existHeader.ID
                 };
 
                 layout.Crc = CrcHelper.ComputeCrc(
-                    $"{layout.Name}|{layout.Description}|{layout.ModifyDate:O}|{layout.Modifier}");
+                    $"{layout.Name}|{layout.Description}|{existHeader.ID}|{layout.ModifyDate:O}|{layout.Modifier}");
 
                 context.Layouts.Add(layout);
                 context.SaveChanges();
@@ -347,7 +373,8 @@ namespace ShadowApp.Infrastructure.Persistence
             context.PageTranslations.AddRange(faTranslation, enTranslation);
 
             page.Crc = CrcHelper.ComputeCrc(
-                $"{page.SpecialPageID}|{page.FaviconID}|{page.ModifyDate:O}|{page.Modifier}");
+                $"{page.SpecialPageID}|{page.FaviconID}|{page.LayoutID}|{page.HeaderVisible}" +
+                $"|{page.ModifyDate:O}|{page.Modifier}");
 
             faTranslation.Crc = CrcHelper.ComputeCrc(
                 $"{faTranslation.Name}|{faTranslation.Description}|{faTranslation.LanguageID}|" +

@@ -2,21 +2,18 @@
 
 namespace ShadowApp.Domain.Entities
 {
-    public class Header
+    public class LayoutItem
     {
         [Key]
         public Guid ID { get; set; }
-        public string Name { get; set; } = "";
-        public string? Description { get; set; }
-        public int CountRows { get; set; }
-        public int CountColumns { get; set; }
         public Guid? Modifier { get; set; }
+        public Guid LayoutItemCategoryID { get; set; }
         public DateTime ModifyDate { get; set; } = DateTime.Now;
         public string Crc { get; set; } = "";
 
         #region navigations
-        public ICollection<Layout> Layouts { get; set; } = [];
         public ICollection<HeaderSection> HeaderSections { get; set; } = [];
+        public LayoutItemCategory LayoutItemCategory { get; set; } = null!;
         #endregion
     }
 }

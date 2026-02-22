@@ -6,7 +6,7 @@ namespace ShadowApp.Domain.Entities
     {
         [Key]
         public Guid ID { get; set; }
-        public Guid SpecialPageID { get; set; }
+        public Guid? SpecialPageID { get; set; }
         public Guid FaviconID { get; set; }
         public Guid LayoutID { get; set; }
         public bool HeaderVisible { get; set; } = true;

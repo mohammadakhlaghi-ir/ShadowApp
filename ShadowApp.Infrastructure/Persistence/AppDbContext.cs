@@ -18,6 +18,9 @@ namespace ShadowApp.Infrastructure.Persistence
         public DbSet<SpecialPageTranslation> SpecialPageTranslations => Set<SpecialPageTranslation>();
         public DbSet<Layout> Layouts => Set<Layout>();
         public DbSet<Header> Headers => Set<Header>();
+        public DbSet<HeaderSection> HeaderSections => Set<HeaderSection>();
+        public DbSet<LayoutItem> LayoutItems => Set<LayoutItem>();
+        public DbSet<LayoutItemCategory> LayoutItemCategories => Set<LayoutItemCategory>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -137,6 +140,28 @@ namespace ShadowApp.Infrastructure.Persistence
                 .HasForeignKey(p => p.HeaderID)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
+
+            #region HeaderSection
+            modelBuilder.Entity<HeaderSection>()
+                .HasOne(p => p.Header)
+                .WithMany(l => l.HeaderSections)
+                .HasForeignKey(p => p.HeaderID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<HeaderSection>()
+                .HasOne(p => p.LayoutItem)
+                .WithMany(l => l.HeaderSections)
+                .HasForeignKey(p => p.LayoutItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+            #endregion
+
+            #region LayoutItem
+            modelBuilder.Entity<LayoutItem>()
+                .HasOne(p => p.LayoutItemCategory)
+                .WithMany(l => l.LayoutItems)
+                .HasForeignKey(p => p.LayoutItemCategoryID)
+                .OnDelete(DeleteBehavior.Restrict);
+            #endregion         
         }
     }
 }

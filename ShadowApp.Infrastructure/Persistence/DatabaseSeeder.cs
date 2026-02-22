@@ -8,6 +8,11 @@ namespace ShadowApp.Infrastructure.Persistence
     {
         public static readonly string appName = "Shadow App";
         public static readonly string[] initializePages = ["Home", "Dashboard"];
+        public static readonly (string Name, string Description)[] LayoutItemCategories =
+        [
+            ("Menu", "Display A Menu"),
+            ("MyAccount", "Display A My Account Link")
+        ];
 
         public static void InitializeDatabase(this AppDbContext context)
         {
@@ -210,15 +215,113 @@ namespace ShadowApp.Infrastructure.Persistence
                 var header = new Header
                 {
                     Name = "Main Header",
-                    Description = "Main Header"
+                    Description = "Main Header",
+                    CountColumns = 1,
+                    CountRows = 2
                 };
 
                 header.Crc = CrcHelper.ComputeCrc(
-                    $"{header.Name}|{header.Description}|{header.ModifyDate:O}|{header.Modifier}");
+                    $"{header.Name}|{header.Description}|{header.CountColumns}|{header.CountRows}|" +
+                    $"{header.ModifyDate:O}|{header.Modifier}");
 
                 context.Headers.Add(header);
                 context.SaveChanges();
+
+                if (!context.HeaderSections.Any())
+                {
+                    var menuLayoutItem = context.LayoutItems
+                               .FirstOrDefault(l => l.LayoutItemCategory.Name == "Menu");
+
+                    if (menuLayoutItem == null)
+                    {
+                        context.SeedLayoutItem();
+                    }
+                    var myAccountLayoutItem = context.LayoutItems
+                        .FirstOrDefault(l => l.LayoutItemCategory.Name == "MyAccount");
+
+                    if (menuLayoutItem == null || myAccountLayoutItem == null)
+                    {
+                        context.SeedLayoutItem();
+
+                        menuLayoutItem = context.LayoutItems
+                              .First(l => l.LayoutItemCategory.Name == "Menu");
+
+                        myAccountLayoutItem = context.LayoutItems
+                              .First(l => l.LayoutItemCategory.Name == "MyAccount");
+                    }
+
+                    var menuSection = new HeaderSection
+                    {
+                        Name = "Menu Section",
+                        Description = "Menu Section",
+                        ColumnIndex = 0,
+                        RowIndex = 0,
+                        HeaderID = header.ID,
+                        LayoutItemID = menuLayoutItem.ID
+                    };
+
+                    var myAccountSection = new HeaderSection
+                    {
+                        Name = "MyAccount Section",
+                        Description = "MyAccount Section",
+                        ColumnIndex = 1,
+                        RowIndex = 0,
+                        HeaderID = header.ID,
+                        LayoutItemID = myAccountLayoutItem.ID
+                    };
+
+                    context.HeaderSections.AddRange(menuSection, myAccountSection);
+                    context.SaveChanges();
+                }
             }
+        }
+
+        public static void SeedLayoutItem(this AppDbContext context)
+        {
+            if (!context.LayoutItems.Any())
+            {
+                foreach (var (Name, Description) in LayoutItemCategories)
+                {
+                    var existingCategory = context.LayoutItemCategories.FirstOrDefault(l => l.Name == Name);
+                    if (existingCategory == null)
+                    {
+                        context.SeedLayoutItemCategory(Name, Description);
+                        existingCategory = context.LayoutItemCategories.First(l => l.Name == Name);
+                    }
+
+                    var layoutItemExists = context.LayoutItems
+                        .Any(li => li.LayoutItemCategoryID == existingCategory.ID);
+
+                    if (layoutItemExists)
+                        continue;
+
+                    var layoutItem = new LayoutItem
+                    {
+                        LayoutItemCategoryID = existingCategory.ID,
+                    };
+
+                    layoutItem.Crc = CrcHelper.ComputeCrc(
+                        $"{layoutItem.LayoutItemCategoryID}|{layoutItem.ModifyDate:O}|{layoutItem.Modifier}");
+
+                    context.LayoutItems.Add(layoutItem);
+                }
+                context.SaveChanges();
+            }
+        }
+
+        public static void SeedLayoutItemCategory(this AppDbContext context, string Name, string Description)
+        {
+            var layoutItemCategory = new LayoutItemCategory
+            {
+                Name = Name,
+                Description = Description
+            };
+
+            layoutItemCategory.Crc = CrcHelper.ComputeCrc(
+                $"{layoutItemCategory.Name}|{layoutItemCategory.Description}");
+
+            context.LayoutItemCategories.Add(layoutItemCategory);
+            context.SaveChanges();
         }
 
         public static void SeedLayout(this AppDbContext context)

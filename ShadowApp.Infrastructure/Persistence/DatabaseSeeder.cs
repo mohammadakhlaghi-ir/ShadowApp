@@ -7,7 +7,8 @@ namespace ShadowApp.Infrastructure.Persistence
     public static class DatabaseSeeder
     {
         public static readonly string appName = "Shadow App";
-        public static readonly string[] initializePages = ["Home", "Dashboard"];
+        public static readonly string[] initializeSpecialPages = ["Home", "Dashboard"];
+        public static readonly string[] initializelPages = ["Contact", "About", "Blog"];
         public static readonly (string Name, string Description)[] LayoutItemCategories =
         [
             ("Menu", "Display A Menu"),
@@ -20,7 +21,8 @@ namespace ShadowApp.Infrastructure.Persistence
             context.SeedLanguages();
             context.SeedSetting();
             context.SeedAdminUser();
-            foreach (var pageName in initializePages) context.SeedPages(pageName);
+            foreach (var pageName in initializeSpecialPages) context.SeedPages(pageName);
+            foreach (var pageName in initializelPages) context.SeedPages(pageName);
         }
 
         public static void SeedLanguages(this AppDbContext context)
@@ -366,6 +368,24 @@ namespace ShadowApp.Infrastructure.Persistence
                     "Dashboard",
                     "Dashboard Page Of Users"
                 ),
+                "Contact" => (
+                    "تماس",
+                    "صفحه تماس سایت",
+                    "Contact",
+                    "Contact Page Of Site"
+                ),
+                "About" => (
+                    "درباره ما",
+                    "صفحه درباره ما سایت",
+                    "About",
+                    "About Page Of Site"
+                ),
+                "Blog" => (
+                    "بلاگ",
+                    "صفحه بلاگ سایت",
+                    "Blog",
+                    "Blog Page Of Site"
+                ),
                 _ => (
                     pageName,
                     pageName,
@@ -425,16 +445,26 @@ namespace ShadowApp.Infrastructure.Persistence
 
         public static void SeedPages(this AppDbContext context, string pageName)
         {
-            var specialPage = context.SpecialPages.FirstOrDefault(s => s.Name == pageName);
+            bool isSpecial = initializeSpecialPages.Contains(pageName);
+            SpecialPage? specialPage = null;
 
-            if (specialPage == null)
+            if (isSpecial)
             {
-                context.SeedSpecialPage(pageName);
-                specialPage = context.SpecialPages.First(s => s.Name == pageName);
-            }
+                specialPage = context.SpecialPages.FirstOrDefault(s => s.Name == pageName);
+                if (specialPage == null)
+                {
+                    context.SeedSpecialPage(pageName);
+                    specialPage = context.SpecialPages.First(s => s.Name == pageName);
+                }
 
-            if (context.Pages.Any(p => p.SpecialPageID == specialPage.ID))
-                return;
+                if (context.Pages.Any(p => p.SpecialPageID == specialPage.ID))
+                    return;
+            }
+            else
+            {
+                if (context.Pages.Any(p => p.Translations.Any(t => t.Name == pageName)))
+                    return;
+            }
 
             var setting = context.Settings.FirstOrDefault();
 
@@ -451,7 +481,7 @@ namespace ShadowApp.Infrastructure.Persistence
 
             var page = new Page
             {
-                SpecialPageID = specialPage.ID,
+                SpecialPageID = specialPage?.ID,
                 FaviconID = setting.FaviconID,
                 LayoutID = setting.LayoutID
             };

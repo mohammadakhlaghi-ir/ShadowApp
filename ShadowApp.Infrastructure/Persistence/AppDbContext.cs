@@ -21,6 +21,7 @@ namespace ShadowApp.Infrastructure.Persistence
         public DbSet<HeaderSection> HeaderSections => Set<HeaderSection>();
         public DbSet<LayoutItem> LayoutItems => Set<LayoutItem>();
         public DbSet<LayoutItemCategory> LayoutItemCategories => Set<LayoutItemCategory>();
+        public DbSet<Menu> Menues => Set<Menu>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -135,33 +136,41 @@ namespace ShadowApp.Infrastructure.Persistence
 
             #region Layout
             modelBuilder.Entity<Layout>()
-                .HasOne(p => p.Header)
-                .WithMany(l => l.Layouts)
-                .HasForeignKey(p => p.HeaderID)
+                .HasOne(l => l.Header)
+                .WithMany(h => h.Layouts)
+                .HasForeignKey(l => l.HeaderID)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
 
             #region HeaderSection
             modelBuilder.Entity<HeaderSection>()
-                .HasOne(p => p.Header)
-                .WithMany(l => l.HeaderSections)
-                .HasForeignKey(p => p.HeaderID)
+                .HasOne(hs => hs.Header)
+                .WithMany(h => h.HeaderSections)
+                .HasForeignKey(hs => hs.HeaderID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<HeaderSection>()
-                .HasOne(p => p.LayoutItem)
+                .HasOne(h => h.LayoutItem)
                 .WithMany(l => l.HeaderSections)
-                .HasForeignKey(p => p.LayoutItemID)
+                .HasForeignKey(h => h.LayoutItemID)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
 
             #region LayoutItem
             modelBuilder.Entity<LayoutItem>()
-                .HasOne(p => p.LayoutItemCategory)
-                .WithMany(l => l.LayoutItems)
-                .HasForeignKey(p => p.LayoutItemCategoryID)
+                .HasOne(li => li.LayoutItemCategory)
+                .WithMany(lic => lic.LayoutItems)
+                .HasForeignKey(li => li.LayoutItemCategoryID)
                 .OnDelete(DeleteBehavior.Restrict);
-            #endregion         
+            #endregion
+
+            #region Menu
+            modelBuilder.Entity<Menu>()
+              .HasOne(m => m.LayoutItem)
+              .WithMany(li => li.Menues)
+              .HasForeignKey(m => m.LayoutItemID)
+              .OnDelete(DeleteBehavior.Restrict);
+            #endregion
         }
     }
 }

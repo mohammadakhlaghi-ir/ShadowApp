@@ -1,6 +1,8 @@
-﻿using ShadowApp.Application.Utilities;
-using ShadowApp.Domain.Entities;
+﻿using Azure;
 using Microsoft.EntityFrameworkCore;
+using ShadowApp.Application.Utilities;
+using ShadowApp.Domain.Entities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShadowApp.Infrastructure.Persistence
 {
@@ -37,7 +39,7 @@ namespace ShadowApp.Infrastructure.Persistence
 
                 farsiLanguage.Crc = CrcHelper.ComputeCrc(
                     $"{farsiLanguage.Name}|{farsiLanguage.Description}|" +
-                    $"{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
+                    $"{farsiLanguage.Modifier}|{farsiLanguage.ModifyDate:O}");
 
                 var englishLanguage = new Language
                 {
@@ -47,7 +49,7 @@ namespace ShadowApp.Infrastructure.Persistence
 
                 englishLanguage.Crc = CrcHelper.ComputeCrc(
                     $"{englishLanguage.Name}|{englishLanguage.Description}|" +
-                    $"{englishLanguage.ModifyDate:O}|{englishLanguage.Modifier}");
+                    $"{englishLanguage.Modifier}|{englishLanguage.ModifyDate:O}");
 
                 context.Languages.AddRange(farsiLanguage, englishLanguage);
                 context.SaveChanges();
@@ -71,7 +73,7 @@ namespace ShadowApp.Infrastructure.Persistence
                     };
 
                     farsiLanguage.Crc = CrcHelper.ComputeCrc($"{farsiLanguage.Name}|" +
-                        $"{farsiLanguage.Description}|{farsiLanguage.ModifyDate:O}|{farsiLanguage.Modifier}");
+                        $"{farsiLanguage.Description}|{farsiLanguage.Modifier}|{farsiLanguage.ModifyDate:O}");
 
                     context.Languages.AddRange(farsiLanguage);
                     context.SaveChanges();
@@ -158,17 +160,17 @@ namespace ShadowApp.Infrastructure.Persistence
                 adminUser.Crc = CrcHelper.ComputeCrc(
                     $"{adminUser.Name}|{adminUser.Email}|" +
                     $"{adminUser.IsDeleted}|{adminUser.Enabled}|" +
-                    $"{adminUser.ModifyDate:O}|{adminUser.Modifier}");
+                    $"{adminUser.Modifier}|{adminUser.ModifyDate:O}");
 
                 faTranslation.Crc = CrcHelper.ComputeCrc(
                     $"{faTranslation.UserID}|{faTranslation.LanguageID}|" +
                     $"{faTranslation.FirstName}|{faTranslation.LastName}|{faTranslation.Description}|" +
-                    $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}");
+                    $"{faTranslation.Modifier}|{faTranslation.ModifyDate:O}");
 
                 enTranslation.Crc = CrcHelper.ComputeCrc(
                     $"{enTranslation.UserID}|{enTranslation.LanguageID}|" +
                     $"{enTranslation.FirstName}|{enTranslation.LastName}|{enTranslation.Description}|" +
-                    $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}");
+                    $"{enTranslation.Modifier}|{enTranslation.ModifyDate:O}");
 
                 context.SaveChanges();
             }
@@ -185,7 +187,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 };
 
                 favicon.Crc = CrcHelper.ComputeCrc(
-                    $"{favicon.Name}|{favicon.Description}|{favicon.ModifyDate:O}|{favicon.Modifier}");
+                    $"{favicon.Name}|{favicon.Description}|{favicon.Modifier}|{favicon.ModifyDate:O}");
 
                 context.Favicons.Add(favicon);
                 context.SaveChanges();
@@ -203,7 +205,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 };
 
                 logo.Crc = CrcHelper.ComputeCrc(
-                    $"{logo.Name}|{logo.Description}|{logo.ModifyDate:O}|{logo.Modifier}");
+                    $"{logo.Name}|{logo.Description}|{logo.Modifier}|{logo.ModifyDate:O}");
 
                 context.Logos.Add(logo);
                 context.SaveChanges();
@@ -224,7 +226,7 @@ namespace ShadowApp.Infrastructure.Persistence
 
                 header.Crc = CrcHelper.ComputeCrc(
                     $"{header.Name}|{header.Description}|{header.CountColumns}|{header.CountRows}|" +
-                    $"{header.ModifyDate:O}|{header.Modifier}");
+                    $"{header.Modifier}|{header.ModifyDate:O}");
 
                 context.Headers.Add(header);
                 context.SaveChanges();
@@ -237,6 +239,7 @@ namespace ShadowApp.Infrastructure.Persistence
                     if (menuLayoutItem == null)
                     {
                         context.SeedLayoutItem();
+
                     }
                     var myAccountLayoutItem = context.LayoutItems
                         .FirstOrDefault(l => l.LayoutItemCategory.Name == "MyAccount");
@@ -247,6 +250,11 @@ namespace ShadowApp.Infrastructure.Persistence
 
                         menuLayoutItem = context.LayoutItems
                               .First(l => l.LayoutItemCategory.Name == "Menu");
+
+                        var existMenu = context.Menues.FirstOrDefault();
+
+                        if (existMenu == null)
+                            context.SeedMenu(menuLayoutItem.ID);
 
                         myAccountLayoutItem = context.LayoutItems
                               .First(l => l.LayoutItemCategory.Name == "MyAccount");
@@ -303,7 +311,7 @@ namespace ShadowApp.Infrastructure.Persistence
                     };
 
                     layoutItem.Crc = CrcHelper.ComputeCrc(
-                        $"{layoutItem.LayoutItemCategoryID}|{layoutItem.ModifyDate:O}|{layoutItem.Modifier}");
+                        $"{layoutItem.LayoutItemCategoryID}|{layoutItem.Modifier}|{layoutItem.ModifyDate:O}");
 
                     context.LayoutItems.Add(layoutItem);
                 }
@@ -345,7 +353,7 @@ namespace ShadowApp.Infrastructure.Persistence
                 };
 
                 layout.Crc = CrcHelper.ComputeCrc(
-                    $"{layout.Name}|{layout.Description}|{existHeader.ID}|{layout.ModifyDate:O}|{layout.Modifier}");
+                    $"{layout.Name}|{layout.Description}|{existHeader.ID}|{layout.Modifier}|{layout.ModifyDate:O}");
 
                 context.Layouts.Add(layout);
                 context.SaveChanges();
@@ -430,15 +438,15 @@ namespace ShadowApp.Infrastructure.Persistence
             context.SpecialPageTranslations.AddRange(faTranslation, enTranslation);
 
             specialPage.Crc = CrcHelper.ComputeCrc(
-                $"{specialPage.Name}|{specialPage.ModifyDate:O}|{specialPage.Modifier}");
+                $"{specialPage.Name}|{specialPage.Modifier}|{specialPage.ModifyDate:O}");
 
             faTranslation.Crc = CrcHelper.ComputeCrc(
                 $"{faTranslation.Name}|{faTranslation.Description}|{faTranslation.LanguageID}|" +
-                $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}");
+                $"{faTranslation.Modifier}|{faTranslation.ModifyDate:O}");
 
             enTranslation.Crc = CrcHelper.ComputeCrc(
                 $"{enTranslation.Name}|{enTranslation.Description}|{enTranslation.LanguageID}|" +
-                $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}");
+                $"{enTranslation.Modifier}|{enTranslation.ModifyDate:O}");
 
             context.SaveChanges();
         }
@@ -507,17 +515,35 @@ namespace ShadowApp.Infrastructure.Persistence
 
             page.Crc = CrcHelper.ComputeCrc(
                 $"{page.SpecialPageID}|{page.FaviconID}|{page.LayoutID}|{page.HeaderVisible}" +
-                $"|{page.ModifyDate:O}|{page.Modifier}");
+                $"|{page.Modifier}|{page.ModifyDate:O}");
 
             faTranslation.Crc = CrcHelper.ComputeCrc(
-                $"{faTranslation.Name}|{faTranslation.Description}|{faTranslation.LanguageID}|" +
-                $"{faTranslation.ModifyDate:O}|{faTranslation.Modifier}");
+                $"{faTranslation.PageID}|{faTranslation.LanguageID}|{faTranslation.Name}|{faTranslation.Description}|" +
+                $"{faTranslation.Modifier}|{faTranslation.ModifyDate:O}");
 
             enTranslation.Crc = CrcHelper.ComputeCrc(
-                $"{enTranslation.Name}|{enTranslation.Description}|{enTranslation.LanguageID}|" +
-                $"{enTranslation.ModifyDate:O}|{enTranslation.Modifier}");
+                $"{enTranslation.PageID}|{enTranslation.LanguageID}|{enTranslation.Name}|{enTranslation.Description}|" +
+                $"{enTranslation.Modifier}|{enTranslation.ModifyDate:O}");
 
             context.SaveChanges();
+        }
+
+        public static void SeedMenu(this AppDbContext context, Guid layoutItem)
+        {
+            if (!context.Menues.Any())
+            {
+                var menu = new Menu
+                {
+                    Name = "Main Menu",
+                    LayoutItemID = layoutItem
+                };
+
+                menu.Crc = CrcHelper.ComputeCrc(
+                    $"{menu.Name}|{menu.LayoutItemID}|{menu.Modifier}|{menu.ModifyDate:O}");
+
+                context.Menues.Add(menu);
+                context.SaveChanges();
+            }
         }
     }
 }
